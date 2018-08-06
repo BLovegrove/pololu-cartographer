@@ -11,23 +11,23 @@ InterruptIn leftRisingEdge(p11);
 InterruptIn rightRisingEdge(p12);
 
 // interrupt functions
-void LeftPulseRising(void)
-{
+void leftPulseRising(void) {
+
     leftPulseCount++;
 }
-void RightPulseRising(void)
-{
+void rightPulseRising(void) {
+
     rightPulseCount++;
 }
 
 // initialise the encoders
-void InitEncoder()
-{
+void initEncoder() {
+
     leftPulseCount = 0;
     rightPulseCount = 0;
     // attach the interrupt functions
-    leftRisingEdge.rise(LeftPulseRising);
-    rightRisingEdge.rise(RightPulseRising);
+    leftRisingEdge.rise(leftPulseRising);
+    rightRisingEdge.rise(rightPulseRising);
     // clear the interrupt pulse counts
     leftRisingEdge.disable_irq();
     leftPulseCount = 0;
@@ -38,8 +38,8 @@ void InitEncoder()
 }
 
 // get and reset the encoder pulse counts
-int LeftEncoder(void)
-{
+int leftEncoder(void) {
+    
     int count;
     leftRisingEdge.disable_irq();
     count = leftPulseCount;
@@ -47,8 +47,8 @@ int LeftEncoder(void)
     leftRisingEdge.enable_irq();
     return count;
 }
-int RightEncoder(void)
-{
+int rightEncoder(void)  {
+
     int count;
     rightRisingEdge.disable_irq();
     count = rightPulseCount;

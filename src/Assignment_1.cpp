@@ -22,9 +22,11 @@ int main()
     // define variables
     int motorTime_ms; // time since started motors in ms
     int nextCalcTime_ms; // time for next calculation in ms
+    int encoder_l; // left rotary encoder value
+    int encoder_r; // right rotary encoder value
+    float roboH; // robots heading
     double roboX; // robots X co-ord
     double roboY; // robots Y co-ord
-    float roboH; // robots heading
 
     
     // display the program title on the LCD
@@ -50,7 +52,7 @@ int main()
     // ADD CODE HERE
     
     // initialise the encoders
-    InitEncoder();   
+    initEncoder();   
     // pause for 2 seconds before starting
     wait(2);
     
@@ -72,19 +74,19 @@ int main()
         nextCalcTime_ms += calcTime_ms;
 
         // get the encoder pulse counts
-        L = LeftEncoder();
-        R = RightEncoder();
+        encoder_l = leftEncoder();
+        encoder_r = rightEncoder();
       
         // display the pulse count values on the LCD
         // ADD CODE HERE
 
         // if there were any pulses
-        if (L != 0 || R != 0) {
+        if (encoder_l != 0 || encoder_r != 0) {
             // calculate the change in the robot position
-            if (L == R) { // if L equals R
+            if (encoder_l == encoder_r) { // if encoder_l equals encoder_r
                 // ADD CODE HERE
 
-            } else { // otherwise, L does not equal R
+            } else { // otherwise, encoder_l does not equal encoder_r
                 // ADD CODE HERE
                 
             }
@@ -92,10 +94,10 @@ int main()
             // ADD CODE HERE
 
             // if necessary, adjust the heading
-            if (H < -PI) {
-                H = H + 2 * PI;
-            } else if (H > PI) {
-                H = H - 2 * PI;
+            if (roboH < -PI) {
+                roboH = roboH + 2 * PI;
+            } else if (roboH > PI) {
+                roboH = roboH - 2 * PI;
             }
         }
          

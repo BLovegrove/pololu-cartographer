@@ -3,10 +3,10 @@
 #include "mbed.h"
 
 // initialise the encoders
-void InitEncoder(void);
+void initEncoder(void);
 
 // get and reset the left encoder count
-int LeftEncoder(void);
+int leftEncoder(void);
 
 // get and reset the left encoder count
-int RightEncoder(void);
+int rightEncoder(void);
