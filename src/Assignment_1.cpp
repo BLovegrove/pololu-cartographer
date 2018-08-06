@@ -60,18 +60,16 @@ int main()
     // start the timer
     timer.start();
     // set the time for the first calculation
-    calc_ms = period_ms;
+    nextCalcTime_ms = calcTime_ms;
     
     // the main loop   
-    while(1)
-    {
+    while(1) {
         // wait until it is time for next calculation
-        do
-        {
-             time_ms = timer.read_ms();
-        } while (time_ms < calc_ms);
+        do {
+            motorTime_ms = timer.read_ms();
+        } while (motorTime_ms < nextCalcTime_ms);
         // set time for the next calculation
-        calc_ms += period_ms;
+        nextCalcTime_ms += calcTime_ms;
 
         // get the encoder pulse counts
         L = LeftEncoder();
@@ -81,29 +79,22 @@ int main()
         // ADD CODE HERE
 
         // if there were any pulses
-        if (L != 0 || R != 0)
-        {
+        if (L != 0 || R != 0) {
             // calculate the change in the robot position
-            if (L == R) // if L equals R
-            {
+            if (L == R) { // if L equals R
                 // ADD CODE HERE
 
-            }
-            else // otherwise, L does not equal R
-            {
-                 // ADD CODE HERE
-
+            } else { // otherwise, L does not equal R
+                // ADD CODE HERE
+                
             }
             // calculate the new robot position
             // ADD CODE HERE
 
             // if necessary, adjust the heading
-            if (H < -PI)
-            {
+            if (H < -PI) {
                 H = H + 2 * PI;
-            }
-            else if (H > PI)
-            {
+            } else if (H > PI) {
                 H = H - 2 * PI;
             }
         }
