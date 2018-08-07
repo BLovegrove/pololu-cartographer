@@ -1,6 +1,11 @@
-#include "mbed.h"
-#include "m3pimaze.h"
-#include "encoder.h"
+#include "../lib/mbed/mbed.h"
+#include "../lib/m3pimaze/m3pimaze.h"
+#include "../lib/encoder/encoder.h"
+#include <iostream>
+#include <string>
+#include <sstring>
+
+using namespace std;
 
 // PI is not defined in the mbed math files
 const double PI = 3.1415926535897931;
@@ -10,8 +15,11 @@ m3pi robot(p23, p9, p10);
 Serial wixel(p28, p27);
 Timer timer;
 
-int main()
-{
+int main() {
+
+    // CHANGE MOTOR SPEED HERE
+    const float motorSpeeds[] = {0.8, 1.0}; // motor speeds for robot from left to right motor
+
     // define constants
     const int calcTime_ms = 50; // time between calculations in ms
     const int pulsePerRev = 45; // wheel pulese/revolution
@@ -29,8 +37,15 @@ int main()
     double roboY; // robots Y co-ord
 
     
-    // display the program title on the LCD
-    // ADD CODE HERE
+    // display the 'active' message on robot LCD (program title too long)
+    for (int i = 0; i < 3; i++) {
+
+        robot.cls();
+        robot.locate(0, 0);
+        robot.printf("Roaming!");
+        wait(1);
+        
+    }
    
     // set the Wixel communication speed (baud rate)
     wixel.baud(115200); // use default format = 8,N,1
@@ -57,7 +72,8 @@ int main()
     wait(2);
     
     // turn the motors on, at the required speeds
-    // ADD CODE HERE
+    robot.left_motor(motorSpeeds[0]);
+    robot.right_motor(motorSpeeds[1]);
 
     // start the timer
     timer.start();
@@ -66,9 +82,12 @@ int main()
     
     // the main loop   
     while(1) {
+
         // wait until it is time for next calculation
         do {
+
             motorTime_ms = timer.read_ms();
+
         } while (motorTime_ms < nextCalcTime_ms);
         // set time for the next calculation
         nextCalcTime_ms += calcTime_ms;
@@ -78,15 +97,22 @@ int main()
         encoder_r = rightEncoder();
       
         // display the pulse count values on the LCD
-        // ADD CODE HERE
+        robot.locate(0, 1);
+        ostringstream encoderPulses_raw;
+        encoderPulses_raw << "R=" << encoder_r << "L=" << encoder_l;
+        string encoderPulses_str = encoderPulses_raw.str();
+        robot.printf(encoderPulses_str.c_str());
 
         // if there were any pulses
         if (encoder_l != 0 || encoder_r != 0) {
+
             // calculate the change in the robot position
             if (encoder_l == encoder_r) { // if encoder_l equals encoder_r
+
                 // ADD CODE HERE
 
             } else { // otherwise, encoder_l does not equal encoder_r
+
                 // ADD CODE HERE
                 
             }
@@ -95,9 +121,13 @@ int main()
 
             // if necessary, adjust the heading
             if (roboH < -PI) {
+
                 roboH = roboH + 2 * PI;
+
             } else if (roboH > PI) {
+
                 roboH = roboH - 2 * PI;
+
             }
         }
          
