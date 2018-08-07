@@ -3,7 +3,7 @@
 #include "../lib/encoder/encoder.h"
 #include <iostream>
 #include <string>
-#include <sstring>
+#include <sstream>
 
 using namespace std;
 
@@ -21,7 +21,7 @@ int main() {
     const float motorSpeeds[] = {0.8, 1.0}; // motor speeds for robot from left to right motor
 
     // define constants
-    const int calcTime_ms = 50; // time between calculations in ms
+    const int calcBreak_ms = 50; // time between calculations in ms
     const int pulsePerRev = 45; // wheel pulese/revolution
     const float axle_cm = 9.6; // axle length in cm
     const float wheel_cm = 3.6; // wheel diameter in cm
@@ -33,6 +33,7 @@ int main() {
     int encoder_l; // left rotary encoder value
     int encoder_r; // right rotary encoder value
     float roboH; // robots heading
+    float roboVoltage; // robots battery voltage
     double roboX; // robots X co-ord
     double roboY; // robots Y co-ord
 
@@ -51,13 +52,14 @@ int main() {
     wixel.baud(115200); // use default format = 8,N,1
 
     // display the program title on the PC
-    // ADD CODE HERE
+    wixel.printf("Pololu Traveller\n\n");
 
     // get and display the battery voltage
-    // ADD CODE HERE
+    roboVoltage = robot.battery();
+    wixel.printf("Battery voltage: %.3fV\n", roboVoltage);
 
     // display the wheel speeds
-    // ADD CODE HERE
+    wixel.printf("Wheel speeds: Right = %%, Left = %%", wheelSpeeds[0], wheelSpeeds[1]);
 
     // display the PC column headings
     // ADD CODE HERE
@@ -78,7 +80,7 @@ int main() {
     // start the timer
     timer.start();
     // set the time for the first calculation
-    nextCalcTime_ms = calcTime_ms;
+    nextCalcTime_ms = calcBreak_ms;
     
     // the main loop   
     while(1) {
@@ -90,7 +92,7 @@ int main() {
 
         } while (motorTime_ms < nextCalcTime_ms);
         // set time for the next calculation
-        nextCalcTime_ms += calcTime_ms;
+        nextCalcTime_ms += calcBreak_ms;
 
         // get the encoder pulse counts
         encoder_l = leftEncoder();
@@ -98,10 +100,9 @@ int main() {
       
         // display the pulse count values on the LCD
         robot.locate(0, 1);
-        ostringstream encoderPulses_raw;
-        encoderPulses_raw << "R=" << encoder_r << "L=" << encoder_l;
-        string encoderPulses_str = encoderPulses_raw.str();
-        robot.printf(encoderPulses_str.c_str());
+        ostringstream encoderPulses;
+        encoderPulses << "R=" << encoder_r << "L=" << encoder_l;
+        robot.printf(encoderPulses.str().c_str());
 
         // if there were any pulses
         if (encoder_l != 0 || encoder_r != 0) {
