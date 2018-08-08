@@ -29,15 +29,19 @@ int main() {
     const double pulseDistance = PI * (wheel_cm / pulsePerRev);
 
     // define variables
-    int motorTime_ms; // time since started motors in ms
+    int runningTime_ms = 0; // time since started motors in ms
     int nextCalcTime_ms; // time for next calculation in ms
-    int encoder_l; // left rotary encoder value
-    int encoder_r; // right rotary encoder value
-    float roboH = 0.0; // robots heading
+    int encoder_l = 0; // left rotary encoder value
+    int encoder_r = 0; // right rotary encoder value
     float roboVoltage; // robots battery voltage
-    double roboX = 0.0; // robots X co-ord
-    double roboY = 0.0; // robots Y co-ord
-    double roboR;
+    float roboX = 0.0; // robots X co-ord
+    float roboX_change; // change in X co-ord after movement & recalculation
+    float roboY = 0.0; // robots Y co-ord
+    float roboY_change; // change in Yco-ord after movement & recalculation
+    float roboH = 0.0; // robots heading
+    float roboH_change; // change in heading after movement & recalculation
+    float roboH_degrees; // robots heading in degrees
+    float roboR; // distance of robot to graph origin (path radius)
 
     
     // display the 'active' message on robot LCD (program title too long)
@@ -52,7 +56,7 @@ int main() {
         
     }
    
-    // set the Wixel communication speed (baud rate)
+    // set the Wixel communication speed (baud rate / bitrate)
     wixel.baud(115200); // use default format = 8,N,1
 
     // display the program title on the PC
@@ -63,35 +67,15 @@ int main() {
     wixel.printf("Battery voltage: %.3f\r\n", roboVoltage);
 
     // display the wheel speeds
-    ostringstream speedString;
-    speedString << "Wheel speeds: Right = " << motorSpeeds[0] << ", Left = " << motorSpeeds[1] << "\r\n\r\n";
-    wixel.printf(speedString.str().c_str());
+    wixel.printf("Wheel speeds: Right = %d, Left = %d\r\n\r\n", motorSpeeds[1], motorSpeeds[0]);
 
     // display the PC column headings
     wixel.printf("Position log: \r\n");
-    ostringstream posHeaders;
-    posHeaders
-    << "X:" << setw(8)
-    << "Y:" << setw(8)
-    << "H:" << setw(8)
-    //<< "T:" << setw(TAB)
-    //<< "L:" << setw(TAB)
-    //<< "R:"
-    << "\r\n";
-    wixel.printf(posHeaders.str().c_str());
+    wixel.printf("%8s,-%8s,-%8s,-%8s,-%8s,-%8s,-%8s\r\n", "", "X:", "Y:", "H:", "L:", "R:"); // print formatted column-headers
 
     // transmit the initial robot position to the PC
-    // convert the heading to degrees before transmitting
-    ostringstream posCurrent;
-    posCurrent << left
-    << "X:"  << setw(6) << roboX
-    << "Y:" << setw(6) << roboY
-    << "H:" << setw(6) << roboH
-    //<< "T:" << setw(TAB)
-    //<< "L:" << setw(TAB)
-    //<< "R:"
-    << "\r\n";
-    wixel.printf(posCurrent.str().c_str());
+    roboH_degrees = roboH * (180 / PI); // convert robo heading to degrees
+    wixel.printf("%8s,-%8.2f,-%8.2f,-%8.2f,-%8.2f,-%8d,-%8d\r\n", "POS,", roboX, roboY, roboH_degrees, encoder_l, encoder_r); // transmit robot co-ords / data
     
     // initialise the encoders
     initEncoder();   
@@ -101,6 +85,7 @@ int main() {
     // turn the motors on, at the required speeds
     robot.left_motor(motorSpeeds[0]);
     robot.right_motor(motorSpeeds[1]);
+    // motor speeds swapped because left/right mixup in 3pi library
 
     // start the timer
     timer.start();
@@ -113,9 +98,9 @@ int main() {
         // wait until it is time for next calculation
         do {
 
-            motorTime_ms = timer.read_ms();
+            runningTime_ms = timer.read_ms();
 
-        } while (motorTime_ms < nextCalcTime_ms);
+        } while (runningTime_ms < nextCalcTime_ms);
         // set time for the next calculation
         nextCalcTime_ms += calcBreak_ms;
 
@@ -167,13 +152,9 @@ int main() {
 
             }
         }
-         
-        // calculate the current time 
-        
- 
-        // transmit the new robot position to the PC
-        // convert H to degrees before transmitting
-        // ADD CODE HERE
+        // transmit the new robot position + data to the PC
+        roboH_degrees = roboH * (180 / PI); // convert robo heading to degrees
+        wixel.printf("%8s,-%8.2f,-%8.2f,-%8.2f,-%8.2f,-%8d,-%8d\r\n", "POS,", roboX, roboY, roboH_degrees, encoder_l, encoder_r); // transmit robot co-ords / data
 
     }
 }
