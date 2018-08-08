@@ -37,6 +37,7 @@ int main() {
     float roboVoltage; // robots battery voltage
     double roboX = 0.0; // robots X co-ord
     double roboY = 0.0; // robots Y co-ord
+    double roboR;
 
     
     // display the 'active' message on robot LCD (program title too long)
@@ -63,7 +64,7 @@ int main() {
 
     // display the wheel speeds
     ostringstream speedString;
-    speedString << "Wheel speeds: Right = " << motorSpeeds[0] << ", Left = " << motorSpeeds[1] << "\r\n";
+    speedString << "Wheel speeds: Right = " << motorSpeeds[0] << ", Left = " << motorSpeeds[1] << "\r\n\r\n";
     wixel.printf(speedString.str().c_str());
 
     // display the PC column headings
@@ -139,15 +140,21 @@ int main() {
             // calculate the change in the robot position
             if (encoder_l == encoder_r) { // if encoder_l equals encoder_r
 
-                // ADD CODE HERE
+                roboX = (encoder_l * pulseDistance * cos(roboH));
+                roboY = (encoder_l * pulseDistance * sin(roboH));
 
             } else { // otherwise, encoder_l does not equal encoder_r
 
-                // ADD CODE HERE
-                
+                roboR = (0.5 * axle_cm * (encoder_r + encoder_l) / (encoder_r - encoder_l));
+                roboH_change = ((encoder_r - encoder_l) * pulseDistance / axle_cm);
+                roboX_change = (roboR * (sin(roboH + roboH_change) - sin(roboH)));
+                roboY_change = (roboR * (cos(roboH) - cos(roboH + roboH_change)));
+
             }
             // calculate the new robot position
-            // ADD CODE HERE
+            roboH += roboH_change;
+            roboX += roboX_change;
+            roboY += roboY_change;
 
             // if necessary, adjust the heading
             if (roboH < -PI) {
@@ -162,7 +169,7 @@ int main() {
         }
          
         // calculate the current time 
-        // ADD CODE HERE
+        
  
         // transmit the new robot position to the PC
         // convert H to degrees before transmitting
