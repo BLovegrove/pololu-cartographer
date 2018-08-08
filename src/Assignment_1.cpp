@@ -1,9 +1,10 @@
-#include "../lib/mbed/mbed.h"
-#include "../lib/m3pimaze/m3pimaze.h"
-#include "../lib/encoder/encoder.h"
+#include "mbed.h"
+#include "m3pimaze.h"
+#include "encoder.h"
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ Timer timer;
 int main() {
 
     // CHANGE MOTOR SPEED HERE
-    const float motorSpeeds[] = {0.8, 1.0}; // motor speeds for robot from left to right motor
+    const float motorSpeeds[] = {0.4, 0.7}; // motor speeds for robot from left to right motor
 
     // define constants
     const int calcBreak_ms = 50; // time between calculations in ms
@@ -32,10 +33,10 @@ int main() {
     int nextCalcTime_ms; // time for next calculation in ms
     int encoder_l; // left rotary encoder value
     int encoder_r; // right rotary encoder value
-    float roboH; // robots heading
+    float roboH = 0.0; // robots heading
     float roboVoltage; // robots battery voltage
-    double roboX; // robots X co-ord
-    double roboY; // robots Y co-ord
+    double roboX = 0.0; // robots X co-ord
+    double roboY = 0.0; // robots Y co-ord
 
     
     // display the 'active' message on robot LCD (program title too long)
@@ -45,7 +46,8 @@ int main() {
         wait(.5);
         robot.locate(0, 0);
         robot.printf("Roaming!");
-        wait(1);
+        wait(.5);
+        robot.cls();
         
     }
    
@@ -53,21 +55,42 @@ int main() {
     wixel.baud(115200); // use default format = 8,N,1
 
     // display the program title on the PC
-    wixel.printf("Pololu Traveller\n\n");
+    wixel.printf("Pololu Traveller\r\n");
 
     // get and display the battery voltage
     roboVoltage = robot.battery();
-    wixel.printf("Battery voltage: %.3fV\n", roboVoltage);
+    wixel.printf("Battery voltage: %.3f\r\n", roboVoltage);
 
     // display the wheel speeds
-    wixel.printf("Wheel speeds: Right = %%, Left = %%", motorSpeeds[0], motorSpeeds[1]);
+    ostringstream speedString;
+    speedString << "Wheel speeds: Right = " << motorSpeeds[0] << ", Left = " << motorSpeeds[1] << "\r\n";
+    wixel.printf(speedString.str().c_str());
 
     // display the PC column headings
-    // ADD CODE HERE
+    wixel.printf("Position log: \r\n");
+    ostringstream posHeaders;
+    posHeaders
+    << "X:" << setw(8)
+    << "Y:" << setw(8)
+    << "H:" << setw(8)
+    //<< "T:" << setw(TAB)
+    //<< "L:" << setw(TAB)
+    //<< "R:"
+    << "\r\n";
+    wixel.printf(posHeaders.str().c_str());
 
     // transmit the initial robot position to the PC
     // convert the heading to degrees before transmitting
-    // ADD CODE HERE
+    ostringstream posCurrent;
+    posCurrent << left
+    << "X:"  << setw(6) << roboX
+    << "Y:" << setw(6) << roboY
+    << "H:" << setw(6) << roboH
+    //<< "T:" << setw(TAB)
+    //<< "L:" << setw(TAB)
+    //<< "R:"
+    << "\r\n";
+    wixel.printf(posCurrent.str().c_str());
     
     // initialise the encoders
     initEncoder();   
@@ -100,10 +123,15 @@ int main() {
         encoder_r = rightEncoder();
       
         // display the pulse count values on the LCD
+        ostringstream encoderPulses_l;
+        ostringstream encoderPulses_r;
+        encoderPulses_l << "L=" << encoder_l;
+        encoderPulses_r << "R=" << encoder_r;
+        robot.cls();
+        robot.locate(0, 0);
+        robot.printf(encoderPulses_l.str().c_str());
         robot.locate(0, 1);
-        ostringstream encoderPulses;
-        encoderPulses << "R=" << encoder_r << "L=" << encoder_l;
-        robot.printf(encoderPulses.str().c_str());
+        robot.printf(encoderPulses_r.str().c_str());
 
         // if there were any pulses
         if (encoder_l != 0 || encoder_r != 0) {
