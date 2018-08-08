@@ -42,6 +42,7 @@ int main() {
     for (int i = 0; i < 3; i++) {
 
         robot.cls();
+        wait(.5);
         robot.locate(0, 0);
         robot.printf("Roaming!");
         wait(1);
@@ -59,7 +60,7 @@ int main() {
     wixel.printf("Battery voltage: %.3fV\n", roboVoltage);
 
     // display the wheel speeds
-    wixel.printf("Wheel speeds: Right = %%, Left = %%", wheelSpeeds[0], wheelSpeeds[1]);
+    wixel.printf("Wheel speeds: Right = %%, Left = %%", motorSpeeds[0], motorSpeeds[1]);
 
     // display the PC column headings
     // ADD CODE HERE
