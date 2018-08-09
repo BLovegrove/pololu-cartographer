@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <map>
 
 using namespace std;
 
@@ -34,13 +35,15 @@ int main() {
     int encoder_l = 0; // left rotary encoder value
     int encoder_r = 0; // right rotary encoder value
     float roboVoltage; // robots battery voltage
-    float roboX = 0.0; // robots X co-ord
-    float roboY = 0.0; // robots Y co-ord
-    float roboH = 0.0; // robots heading
     float roboH_change; // change in heading after movement & recalculation
     float roboH_degrees; // robots heading in degrees
     float roboR; // distance of robot to graph origin (path radius)
 
+    // associative array ('map' or 'dictionary') for robot position for easier handling
+    map<char,float> roboPosition;
+    roboPosition["X"] = 0.0; // robot X co-ordinate
+    roboPosition["Y"] = 0.0; // robot Y co-ordinate
+    roboPosition["H"] = 0.0; // robot heading
     
     // display the 'active' message on robot LCD (program title too long)
     for (int i = 0; i < 3; i++) {
@@ -72,8 +75,8 @@ int main() {
     wixel.printf("%8s,-%8s,-%8s,-%8s,-%8s,-%8s,-%8s\r\n", "", "X:", "Y:", "H:", "L:", "R:"); // print formatted column-headers
 
     // transmit the initial robot position to the PC
-    roboH_degrees = roboH * (180 / PI); // convert robo heading to degrees
-    wixel.printf("%8s,-%8.2f,-%8.2f,-%8.2f,-%8.2f,-%8d,-%8d\r\n", "POS,", roboX, roboY, roboH_degrees, encoder_l, encoder_r);
+    roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
+    wixel.printf("%8s,-%8.2f,-%8.2f,-%8.2f,-%8.2f,-%8d,-%8d\r\n", "POS,", roboPosition["X"], roboPosition["Y"], roboH_degrees, encoder_l, encoder_r);
     
     // initialise the encoders
     initEncoder();   
@@ -116,34 +119,34 @@ int main() {
             // calculate the change in the robot position
             if (encoder_l == encoder_r) { // if encoder_l equals encoder_r
 
-                roboX = (encoder_l * pulseDistance * cos(roboH));
-                roboY = (encoder_l * pulseDistance * sin(roboH));
+                roboPosition["X"] = (encoder_l * pulseDistance * cos(roboPosition["H"]));
+                roboPosition["Y"] = (encoder_l * pulseDistance * sin(roboPosition["H"]));
 
             } else { // otherwise, encoder_l does not equal encoder_r
 
                 roboR = (0.5 * axle_cm * (encoder_r + encoder_l) / (encoder_r - encoder_l));
                 roboH_change = ((encoder_r - encoder_l) * pulseDistance / axle_cm);
-                roboX += (roboR * (sin(roboH + roboH_change) - sin(roboH)));
-                roboY += (roboR * (cos(roboH) - cos(roboH + roboH_change)));
+                roboPosition["X"] += (roboR * (sin(roboPosition["H"] + roboH_change) - sin(roboPosition["H"])));
+                roboPosition["Y"] += (roboR * (cos(roboPosition["H"]) - cos(roboPosition["H"] + roboH_change)));
 
             }
             // calculate the new robot heading
-            roboH += roboH_change;
+            roboPosition["H"] += roboH_change;
 
             // if necessary, adjust the heading
-            if (roboH < -PI) {
+            if (roboPosition["H"] < -PI) {
 
-                roboH = roboH + 2 * PI;
+                roboPosition["H"] += 2 * PI;
 
-            } else if (roboH > PI) {
+            } else if (roboPosition["H"] > PI) {
 
-                roboH = roboH - 2 * PI;
+                roboPosition["H"] -= 2 * PI;
 
             }
         }
         // transmit the new robot position + data to the PC
-        roboH_degrees = roboH * (180 / PI); // convert robo heading to degrees
-        wixel.printf("%8s,-%8.2f,-%8.2f,-%8.2f,-%8.2f,-%8d,-%8d\r\n", "POS,", roboX, roboY, roboH_degrees, encoder_l, encoder_r);
+        roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
+        wixel.printf("%8s,-%8.2f,-%8.2f,-%8.2f,-%8.2f,-%8d,-%8d\r\n", "POS,", roboPosition["X"], roboPosition["Y"], roboH_degrees, encoder_l, encoder_r);
 
     }
 }
