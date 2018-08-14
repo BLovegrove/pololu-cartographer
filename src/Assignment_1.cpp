@@ -30,10 +30,11 @@ int main() {
     const double pulseDistance = PI * (wheel_cm / pulsePerRev);
 
     // define variables
-    int runningTime_ms = 0; // time since started motors in ms
+    int runTime_ms = 0; // time since started main operation started in milliseconds
     int nextCalcTime_ms; // time for next calculation in ms
     int encoder_l = 0; // left rotary encoder value
     int encoder_r = 0; // right rotary encoder value
+    float runTIme_s = 0.00; // time since main operation started in seconds
     float roboVoltage; // robots battery voltage
     float roboH_change; // change in heading after movement & recalculation
     float roboH_degrees; // robots heading in degrees
@@ -53,12 +54,10 @@ int main() {
         robot.locate(0, 0);
         robot.printf("Roaming!");
         wait(.5);
-        robot.cls();
-        
     }
    
     // set the Wixel communication speed (baud rate / bitrate)
-    wixel.baud(115200); // use default format = 8,N,1
+    wixel.baud(115200);
 
     // display the program title on the PC
     wixel.printf("Pololu Traveller\r\n");
@@ -72,11 +71,11 @@ int main() {
 
     // display the PC column headings
     wixel.printf("Position log: \r\n");
-    wixel.printf("%8s,-%8s,-%8s,-%8s,-%8s,-%8s,-%8s\r\n", "", "X:", "Y:", "H:", "L:", "R:"); // print formatted column-headers
+    wixel.printf("%4s,-%9s,-%9s,-%9s,-%9s,-%9s,-%9s,-%9s\r\n", "", "X:", "Y:", "H:", "T:", "L:", "R:"); // print formatted column-headers
 
     // transmit the initial robot position to the PC
     roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
-    wixel.printf("%8s,-%8.2f,-%8.2f,-%8.2f,-%8.2f,-%8d,-%8d\r\n", "POS,", roboPosition["X"], roboPosition["Y"], roboH_degrees, encoder_l, encoder_r);
+    wixel.printf("%3s,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9d,-%9d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
     
     // initialise the encoders
     initEncoder();   
@@ -99,9 +98,9 @@ int main() {
         // wait until it is time for next calculation
         do {
 
-            runningTime_ms = timer.read_ms();
+            runTime_ms = timer.read_ms();
 
-        } while (runningTime_ms < nextCalcTime_ms);
+        } while (runTime_ms < nextCalcTime_ms);
         // set time for the next calculation
         nextCalcTime_ms += calcBreak_ms;
 
@@ -144,10 +143,12 @@ int main() {
 
             }
         }
-        // transmit the new robot position + data to the PC
-        roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
-        wixel.printf("%8s,-%8.2f,-%8.2f,-%8.2f,-%8.2f,-%8d,-%8d\r\n", "POS,", roboPosition["X"], roboPosition["Y"], roboH_degrees, encoder_l, encoder_r);
 
+        runTime_s += 0.05; // add one 5ms period to run time for 1 complete calculation
+        roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
+
+        // transmit the new robot position + data to the PC
+        wixel.printf("%3s,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9d,-%9d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
     }
 }
 
