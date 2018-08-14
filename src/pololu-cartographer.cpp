@@ -20,6 +20,8 @@ const double PI = 3.1415926535897931;
 // define the m3pi (robot) and Serial (wixel) objects
 m3pi robot(p23, p9, p10);
 Serial wixel(p28, p27);
+
+// create timer
 Timer timer;
 
 int main() {
@@ -39,25 +41,25 @@ int main() {
     int nextCalcTime_ms; // time for next calculation in ms
     int encoder_l = 0; // left rotary encoder value
     int encoder_r = 0; // right rotary encoder value
-    float runTIme_s = 0.00; // time since main operation started in seconds
+    float runTime_s = 0.00; // time since main operation started in seconds
     float roboVoltage; // robots battery voltage
     float roboH_change; // change in heading after movement & recalculation
     float roboH_degrees; // robots heading in degrees
     float roboR; // distance of robot to graph origin (path radius)
 
-    // associative array ('map' or 'dictionary') for robot position for easier handling
-    map<char,float> roboPosition;
+    // associative array ('map' or 'dictionary') of robot position for easier handling
+    map<string,float> roboPosition;
     roboPosition["X"] = 0.0; // robot X co-ordinate
     roboPosition["Y"] = 0.0; // robot Y co-ordinate
     roboPosition["H"] = 0.0; // robot heading
     
-    // display the 'active' message on robot LCD (program title too long)
+    // display the 'active' message on robot LCD on boot (program title too long)
     for (int i = 0; i < 3; i++) {
 
         robot.cls();
         wait(.5);
         robot.locate(0, 0);
-        robot.printf("Roaming!");
+        robot.printf("Mapping!");
         wait(.5);
     }
    
@@ -117,7 +119,7 @@ int main() {
         robot.locate(0, 1);
         robot.printf("%3d  %3d", encoder_l, encoder_r);
 
-        // if there were any pulses
+        // if the wheels moved
         if (encoder_l != 0 || encoder_r != 0) {
 
             // calculate the change in the robot position
@@ -134,6 +136,7 @@ int main() {
                 roboPosition["Y"] += (roboR * (cos(roboPosition["H"]) - cos(roboPosition["H"] + roboH_change)));
 
             }
+            
             // calculate the new robot heading
             roboPosition["H"] += roboH_change;
 
@@ -149,8 +152,11 @@ int main() {
             }
         }
 
-        runTime_s += 0.05; // add one 5ms period to run time for 1 complete calculation
-        roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
+        // add one 5ms period to run time for 1 complete calculation
+        runTime_s += 0.05; // plain number instead of variable&math for less processor cycles
+
+        // convert robo heading to degrees
+        roboH_degrees = roboPosition["H"] * (180 / PI);
 
         // transmit the new robot position + data to the PC
         wixel.printf("%3s,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9d,-%9d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
