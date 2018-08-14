@@ -1,3 +1,8 @@
+// pololu-cartographer.cpp
+// Developed by: Brandon Ash Lovegrove, ID: 17982686
+// ENSE504 2018 Assignment 1 program code
+// Requires encoder.cpp and encoder.h as a library in the project.
+
 #include "mbed.h"
 #include "m3pimaze.h"
 #include "encoder.h"
