@@ -78,14 +78,14 @@ int main() {
 
     // display the PC column headings
     wixel.printf("Position log: \r\n");
-    wixel.printf("%3s,%-5s,%-5s,%-5s,%-5s,%-5s,%-5s,%-5s\r\n", "", "X:", "Y:", "H:", "T:", "L:", "R:"); // print formatted column-headers
+    wixel.printf("%3s %-5s %-5s %-5s %-5s %-5s %-5s %-5s\r\n", "", "X:", "Y:", "H:", "T:", "L:", "R:"); // print formatted column-headers
 
     // transmit the initial robot position to the PC
     roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
-    wixel.printf("%3s,%-5.2f,%-5.2f,%-5.2f,%-5.2f,%-5.2f,%-4d,%-4d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
+    wixel.printf("%3s,%5.2f,%5.2f,%5.2f,%5.2f,%5.2f,%4.2f,%4.2f\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
     
     // initialise the encoders
-    initEncoder();   
+    InitEncoder();   
     // pause for 2 seconds before starting
     wait(2);
     
@@ -112,8 +112,8 @@ int main() {
         nextCalcTime_ms += calcBreak_ms;
 
         // get the encoder pulse counts
-        encoder_l = leftEncoder();
-        encoder_r = rightEncoder();
+        encoder_l = LeftEncoder();
+        encoder_r = RightEncoder();
       
         // display the pulse count values on the LCD left value = left encoder, right value = right encoder
         robot.locate(0, 1);
@@ -159,7 +159,7 @@ int main() {
         roboH_degrees = roboPosition["H"] * (180 / PI);
 
         // transmit the new robot position + data to the PC
-        wixel.printf("%3s,%-5.2f,%-5.2f,%-5.2f,%-5.2f,%-5d,%-5d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
+        wixel.printf("%3s,%5.2f,%5.2f,%5.2f,%5.2f,%5.2f,%5.2f\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
     }
 }
 
