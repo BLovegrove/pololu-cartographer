@@ -74,15 +74,15 @@ int main() {
     wixel.printf("Battery voltage: %.3f\r\n", roboVoltage);
 
     // display the wheel speeds
-    wixel.printf("Wheel speeds: Right = %d, Left = %d\r\n\r\n", motorSpeeds[1], motorSpeeds[0]);
+    wixel.printf("Wheel speeds: Right = %.2f, Left = %.2f\r\n\r\n", motorSpeeds[1], motorSpeeds[0]);
 
     // display the PC column headings
     wixel.printf("Position log: \r\n");
-    wixel.printf("%4s,-%9s,-%9s,-%9s,-%9s,-%9s,-%9s,-%9s\r\n", "", "X:", "Y:", "H:", "T:", "L:", "R:"); // print formatted column-headers
+    wixel.printf("%3s,%-5s,%-5s,%-5s,%-5s,%-5s,%-5s,%-5s\r\n", "", "X:", "Y:", "H:", "T:", "L:", "R:"); // print formatted column-headers
 
     // transmit the initial robot position to the PC
     roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
-    wixel.printf("%3s,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9d,-%9d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
+    wixel.printf("%3s,%-5.2f,%-5.2f,%-5.2f,%-5.2f,%-5.2f,%-4d,%-4d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
     
     // initialise the encoders
     initEncoder();   
@@ -159,7 +159,7 @@ int main() {
         roboH_degrees = roboPosition["H"] * (180 / PI);
 
         // transmit the new robot position + data to the PC
-        wixel.printf("%3s,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9.2f,-%9d,-%9d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
+        wixel.printf("%3s,%-5.2f,%-5.2f,%-5.2f,%-5.2f,%-5d,%-5d\r\n", "pos", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
     }
 }
 
