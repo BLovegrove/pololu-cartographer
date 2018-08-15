@@ -67,7 +67,7 @@ int main() {
     wixel.baud(115200);
 
     // display the program title on the PC
-    wixel.printf("Pololu Traveller\r\n");
+    wixel.printf("Pololu Cartographer\r\n");
 
     // get and display the battery voltage
     roboVoltage = robot.battery();
@@ -78,7 +78,7 @@ int main() {
 
     // display the PC column headings
     wixel.printf("Position log: \r\n");
-    wixel.printf("%3s %-5s %-5s %-5s %-5s %-6s %-5s %-5s\r\n", "", "X:", "Y:", "H:", "T:", "L:", "R:"); // print formatted column-headers
+    wixel.printf("%3s %-7s %-7s %-7s %-7s %-6s %-3s %-3s\r\n", "", "X", "Y", "H", "T", "L", "R"); // print formatted column-headers
 
     // transmit the initial robot position to the PC
     roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
