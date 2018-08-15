@@ -82,7 +82,7 @@ int main() {
 
     // transmit the initial robot position to the PC
     roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
-    wixel.printf("POS|%7.2f|%7.2f|%7.2f|%6.2f|%3d|%3d\r\n", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
+    wixel.printf("POS,%7.2f,%7.2f,%7.2f,%6.2f,%3d,%3d\r\n", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
     
     // initialise the encoders
     InitEncoder();   
@@ -159,7 +159,7 @@ int main() {
         roboH_degrees = roboPosition["H"] * (180 / PI);
 
         // transmit the new robot position + data to the PC
-        wixel.printf("POS|%7.2f|%7.2f|%7.2f|%6.2f|%3d|%3d\r\n", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
+        wixel.printf("POS,%7.2f,%7.2f,%7.2f,%6.2f,%3d,%3d\r\n", roboPosition["X"], roboPosition["Y"], roboH_degrees, runTime_s, encoder_l, encoder_r);
     }
 }
 
