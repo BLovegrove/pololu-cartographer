@@ -27,7 +27,7 @@ Timer timer;
 int main() {
 
     // CHANGE MOTOR SPEED HERE
-    const float motorSpeeds[] = {0.4, 0.7}; // motor speeds for robot from left to right motor
+    const float motorSpeeds[] = {0.7, 0.4}; // motor speeds for robot from left to right motor
 
     // define constants
     const int calcBreak_ms = 50; // time between calculations in ms
