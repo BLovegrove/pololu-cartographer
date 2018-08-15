@@ -78,7 +78,7 @@ int main() {
 
     // display the PC column headings
     wixel.printf("Position log: \r\n");
-    wixel.printf("%3s %-7s %-7s %-7s %-7s %-6s %-3s %-3s\r\n", "", "X", "Y", "H", "T", "L", "R"); // print formatted column-headers
+    wixel.printf("    X:     Y:     H:     T:     L: R: \r\n"); // print formatted column-headers
 
     // transmit the initial robot position to the PC
     roboH_degrees = roboPosition["H"] * (180 / PI); // convert robo heading to degrees
